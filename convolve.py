@@ -18,22 +18,21 @@ def generateGaussiankernel(size=5, sigma=1):
             kern[i,j] = gauseDist(dist, 0, sigma)
     return kern/kern.sum()
 
-def generateSobel():
+def generateSobelX():
     return np.array([[-1,0,1],[-2, 0, 2],[-1, 0, 1]])
-
+def generateSobelY():
+    return np.array([[1,2,1],[0, 0, 0],[-1, -2, -1]])
 def convolve(img, kern):
     size = int((kern.shape[1]-1)/2)
     for i, row in enumerate(img):
         for j, val in enumerate(row):
             if j>size and j<(img.shape[0]-size) and i>size and i<(img.shape[1]-size):
                 selected_reg = img[i-size:(i+size+1), j-size:(j+size+1)]
-                num = np.multiply(kern,selected_reg).sum()
-                if not (num ==num):
-                    print(selected_reg)
+                num = np.multiply(selected_reg,kern).sum()
                 img[i,j] = num
     return img
 
-input = Image.open("pineapple.jpg")
+input = Image.open("cat.jpg")
 gray = np.array(ImageOps.grayscale(input))
 print(gray.shape[0:2])
 # gray = img_arr[:,:,0]*0.2989 + img_arr[:,:,1]*0.5870 + img_arr[:,:,2]*0.1140
@@ -41,10 +40,10 @@ print(gray.shape[0:2])
 # PIL_image.show()
 kernel = generateGaussiankernel(5, 10)
 blur = convolve(gray, kernel)
-kernel = generateSobel()
-x_sobel = convolve(blur, kernel)
-x_sobel = x_sobel-(x_sobel<200)
-PIL_image = Image.fromarray(x_sobel.astype('uint8'), 'L')
+# kernel = generateSobelY()
+# x_sobel = np.convolve(blur, kernel)
+# x_sobel = x_sobel-(x_sobel<200)
+PIL_image = Image.fromarray(blur.astype('uint8'), 'L')
 PIL_image.show()
 # # input.show()
 
